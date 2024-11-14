@@ -135,4 +135,81 @@ Summary of Emojis and Their Associated Steps:
 🧑‍💻 Create Flowchart
 This project demonstrates how the Iris dataset can be used to train different classification models and evaluate their accuracy for flower species prediction. Each step in the process contributes to the overall goal of building a reliable machine learning model for classification.
 
-------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+            SALES PREDICTION USING PYTHON
+
+Loading and Preprocessing the Data 📂🔧
+Loading the Dataset:
+The first step is to load the advertising.csv dataset into a DataFrame using pandas. This allows us to work with the data in a structured way.
+📝 Action: pd.read_csv('advertising.csv')
+
+Handling Missing Values ❓:
+The code checks for any missing values in the dataset using data.isnull().sum(). This helps identify if any data points are missing for any of the columns (TV, Radio, Newspaper, Sales). If there are any missing values, they can be handled through imputation or removal (though not done explicitly in the code).
+🛠️ Action: data.isnull().sum()
+
+Checking for Duplicates 🔄:
+The next step is to check if there are any duplicate rows in the dataset. Duplicates are unnecessary and can skew the model’s predictions, so they are removed using data.drop_duplicates().
+🧹 Action: data.duplicated().sum()
+
+2. Data Visualization 📊🔍
+Pairplot of Features and Target:
+A pairplot is generated using seaborn to visualize the relationships between all the features (TV, Radio, Newspaper) and the target (Sales). This helps you understand if any linear patterns exist between features and sales, which is important for the model selection process.
+📉 Action: sns.pairplot(data)
+
+Scatterplots for Features vs Sales:
+Scatterplots are created to specifically visualize the relationship between each feature (TV, Radio, Newspaper) and the target variable (Sales). This allows us to visually inspect the strength and direction of the relationships.
+🎯 Action: sns.scatterplot(x='TV', y='Sales', data=data)
+
+3. Splitting the Data 🔪📊
+Feature Selection:
+The independent variables (X) are selected to include 'TV', 'Radio', and 'Newspaper', which are the features used to predict sales. The dependent variable (y) is 'Sales', which is the target variable that the model is trying to predict.
+🔑 Action: X = data[['TV', 'Radio', 'Newspaper']], y = data['Sales']
+
+Training and Testing Split 🔄:
+The dataset is split into a training set (80% of the data) and a testing set (20% of the data) using train_test_split(). This ensures that the model is trained on a portion of the data and tested on a separate portion, which helps evaluate its performance.
+🏋️‍♀️ Action: train_test_split(X, y, test_size=0.2, random_state=42)
+
+4. Model Training and Evaluation 🚀📉
+Linear Regression Model:
+The first model used is Linear Regression, a simple model that assumes a linear relationship between the features and the target. The model is trained on the training data (X_train, y_train). After training, predictions are made on the test data (X_test), and the performance is evaluated using Mean Squared Error (MSE) and R-squared (R²).
+📐 Action: LinearRegression().fit(X_train, y_train)
+
+Ridge and Lasso Regression:
+These are variants of linear regression that include regularization to prevent overfitting:
+
+Ridge Regression: Adds an L2 penalty to the loss function, which helps in controlling the magnitude of the coefficients.
+Lasso Regression: Adds an L1 penalty, which can also set some coefficients to zero, effectively performing feature selection.
+💡 Action: Ridge(alpha=1.0), Lasso(alpha=0.1)
+These models are also trained and evaluated similarly to Linear Regression, and their MSE and R² scores are printed.
+
+Random Forest Regression:
+A more powerful model called Random Forest is trained, which builds multiple decision trees and aggregates their predictions. This model tends to perform better for more complex data patterns than linear models. It also provides feature importance metrics.
+🌲 Action: RandomForestRegressor(n_estimators=100, random_state=42)
+
+5. Model Evaluation and Results 📊🎯
+Model Performance:
+After training the models (Linear Regression, Ridge, Lasso, Random Forest), the predictions made on the test set are evaluated using Mean Squared Error (MSE) and R-squared (R²):
+
+MSE quantifies the average squared difference between the predicted and actual values (lower is better).
+R² tells us how well the model explains the variability of the target variable (closer to 1 is better). 📈 Action: mean_squared_error(), r2_score()
+Comparison of Models:
+The results from Linear Regression, Ridge, Lasso, and Random Forest are printed, allowing you to compare which model performs the best in terms of MSE and R².
+🥇 Action: print(f'Ridge MSE: {mse_ridge}, R2: {r2_ridge}'), print(f'Lasso MSE: {mse_lasso}, R2: {r2_lasso}')
+
+6. Visualizing Results 📈🌟
+Feature Importance:
+For the Random Forest model, it's often useful to visualize which features have the most impact on the target variable (Sales). Random Forest can compute feature importance, and we can plot this to understand how each feature contributes to the model.
+🔍 Action: rf_model.feature_importances_
+
+Scatter Plots for Features:
+Scatterplots are again used to visually assess the relationship between the features (TV, Radio, Newspaper) and the target variable (Sales). This provides insights into whether linear regression assumptions hold or if more complex models are required.
+🎨 Action: sns.scatterplot(x='TV', y='Sales', data=data)
+
+In Summary 💡🔍:
+The dataset is first loaded and cleaned by removing duplicates and checking for missing values.
+We visualize the data using pairplots and scatterplots to understand feature-target relationships.
+The data is split into training and testing sets, and multiple models are applied to predict sales: Linear Regression, Ridge Regression, Lasso Regression, and Random Forest Regression.
+After training, models are evaluated using MSE and R², and their performance is compared.
+Visualizations are generated to analyze the relationships between features and target sales.
+This workflow provides a comprehensive approach to predicting sales using machine learning, and the use of different models helps you understand which performs best for your dataset.
