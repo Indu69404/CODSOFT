@@ -1,0 +1,122 @@
+pip install matplotlib networkx
+import pandas as pd
+
+# Load the dataset (with encoding to handle special characters)
+data = pd.read_csv('IMDb Movies India.csv', encoding='ISO-8859-1')
+
+# Explore the data
+data.info()
+data.describe()
+data.head()
+#Handle Missing Values
+
+data.dropna(subset=['Genre', 'Director', 'Rating'], inplace=True)
+#Convert Categorical Variables
+
+from sklearn.preprocessing import LabelEncoder
+
+le = LabelEncoder()
+data['Genre'] = le.fit_transform(data['Genre'])
+data['Director'] = le.fit_transform(data['Director'])
+data['Actor 1'] = le.fit_transform(data['Actor 1'])
+data['Actor 2'] = le.fit_transform(data['Actor 2'])
+data['Actor 3'] = le.fit_transform(data['Actor 3'])
+#Define Features (X) and Target (y)
+
+X = data[['Genre', 'Director', 'Actor 1', 'Actor 2', 'Actor 3', 'Duration', 'Votes']]
+y = data['Rating']
+#Split the Dataset
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Step 1: Remove ' min' from the 'Duration' column
+data['Duration'] = data['Duration'].str.replace(' min', '').astype(float)  # Convert to float first
+
+# Step 2: Handle missing values (e.g., fill with the median, or drop)
+data['Duration'].fillna(data['Duration'].median(), inplace=True)  # Fill missing values with median
+
+# Step 3: Convert to integers
+data['Duration'] = data['Duration'].astype(int)
+
+# Check the result
+print(data['Duration'].head())
+# Check for non-numeric columns in X_train
+non_numeric_columns = X_train.select_dtypes(exclude=['number']).columns
+print(non_numeric_columns)
+# One-Hot Encoding for categorical features in X_train and X_test
+X_train = pd.get_dummies(X_train, drop_first=True)
+X_test = pd.get_dummies(X_test, drop_first=True)
+# Align columns of X_test to match X_train
+X_test = X_test.reindex(columns=X_train.columns, fill_value=0)
+# Fill missing values in X_train and X_test
+X_train = X_train.fillna(X_train.median())
+X_test = X_test.fillna(X_test.median())
+# Ensure all columns in X_train are numeric (no strings)
+X_train = X_train.select_dtypes(include=['number'])
+
+# Handle categorical variables (if any)
+X_train = pd.get_dummies(X_train, drop_first=True)
+X_test = pd.get_dummies(X_test, drop_first=True)
+
+# Align columns between train and test data
+X_test = X_test.reindex(columns=X_train.columns, fill_value=0)
+
+# Handle missing values if necessary
+X_train = X_train.fillna(X_train.median())
+X_test = X_test.fillna(X_test.median())
+
+# Fit the model
+model.fit(X_train, y_train)
+
+# Predict
+y_pred = model.predict(X_test)
+# If y_train is categorical, you can use LabelEncoder to convert it to numeric
+from sklearn.preprocessing import LabelEncoder
+encoder = LabelEncoder()
+y_train = encoder.fit_transform(y_train)
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+y_pred = model.predict(X_test)
+mae = mean_absolute_error(y_test, y_pred)
+rmse = mean_squared_error(y_test, y_pred, squared=False)
+
+print("Mean Absolute Error:", mae)
+print("Root Mean Squared Error:", rmse)
+import matplotlib.pyplot as plt
+import networkx as nx
+
+# Create a directed graph using networkx
+G = nx.DiGraph()
+
+# Add nodes for each step in the process
+G.add_node("Data Collection\n(IMDb Movies India Dataset)")
+G.add_node("Data Preprocessing\n(Handle Missing Data, Encoding, Scaling)")
+G.add_node("Feature Engineering\n(Create and Select Features)")
+G.add_node("Model Selection\n(Choose Regression Models)")
+G.add_node("Model Training\n(Train with X_train, y_train)")
+G.add_node("Model Evaluation\n(Evaluate with MAE, RMSE)")
+G.add_node("Model Tuning\n(Optimize Hyperparameters)")
+G.add_node("Prediction\n(Predict Ratings for Unseen Data)")
+
+# Add edges (connections between nodes)
+G.add_edges_from([
+    ("Data Collection\n(IMDb Movies India Dataset)", "Data Preprocessing\n(Handle Missing Data, Encoding, Scaling)"),
+    ("Data Preprocessing\n(Handle Missing Data, Encoding, Scaling)", "Feature Engineering\n(Create and Select Features)"),
+    ("Feature Engineering\n(Create and Select Features)", "Model Selection\n(Choose Regression Models)"),
+    ("Model Selection\n(Choose Regression Models)", "Model Training\n(Train with X_train, y_train)"),
+    ("Model Training\n(Train with X_train, y_train)", "Model Evaluation\n(Evaluate with MAE, RMSE)"),
+    ("Model Evaluation\n(Evaluate with MAE, RMSE)", "Model Tuning\n(Optimize Hyperparameters)"),
+    ("Model Tuning\n(Optimize Hyperparameters)", "Prediction\n(Predict Ratings for Unseen Data)")
+])
+
+# Set up the plot
+plt.figure(figsize=(10, 8))
+
+# Draw the graph
+pos = nx.spring_layout(G, seed=42)  # Position the nodes using a spring layout
+nx.draw(G, pos, with_labels=True, node_size=4000, node_color="skyblue", font_size=10, font_weight="bold", edge_color="gray")
+
+# Display the flowchart
+plt.title("Movie Rating Prediction Process")
+plt.show()
