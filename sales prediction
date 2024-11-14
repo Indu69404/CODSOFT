@@ -1,0 +1,127 @@
+import pandas as pd
+
+# Load the dataset
+data = pd.read_csv('advertising.csv')
+# Check for missing values
+data.isnull().sum()
+
+# Check for duplicates
+data.duplicated().sum()
+
+# Drop duplicates if any
+data = data.drop_duplicates()
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Visualizing the relationship between the features and sales
+sns.pairplot(data)
+plt.show()
+from sklearn.model_selection import train_test_split
+
+# Splitting the dataset into training and testing sets
+X = data[['TV', 'Radio', 'Newspaper']]  
+# Features
+y = data['Sales']  
+# Target variable
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Check the column names of the dataset
+print(data.columns)
+from sklearn.linear_model import LinearRegression
+
+# Initialize the model
+model = LinearRegression()
+
+# Train the model
+model.fit(X_train, y_train)
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Load the dataset
+data = pd.read_csv('advertising.csv')
+
+# Check column names and structure
+print(data.columns)
+print(data.head())
+
+# Check for missing values
+data.isnull().sum()
+
+# Check for duplicates and remove if any
+data = data.drop_duplicates()
+
+# Split dataset into features (X) and target (y)
+X = data[['TV', 'Radio', 'Newspaper']]
+y = data['Sales']
+
+# Split data into training and testing sets (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize the Linear Regression model
+model = LinearRegression()
+
+# Train the model
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f'Mean Squared Error: {mse}')
+print(f'R-squared: {r2}')
+from sklearn.linear_model import Ridge, Lasso
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Train a Ridge Regression model (with regularization)
+ridge_model = Ridge(alpha=1.0)
+ridge_model.fit(X_train, y_train)
+
+# Train a Lasso Regression model (with regularization)
+lasso_model = Lasso(alpha=0.1)
+lasso_model.fit(X_train, y_train)
+
+# Make predictions for Ridge and Lasso models
+y_pred_ridge = ridge_model.predict(X_test)
+y_pred_lasso = lasso_model.predict(X_test)
+
+# Evaluate the models
+mse_ridge = mean_squared_error(y_test, y_pred_ridge)
+r2_ridge = r2_score(y_test, y_pred_ridge)
+
+mse_lasso = mean_squared_error(y_test, y_pred_lasso)
+r2_lasso = r2_score(y_test, y_pred_lasso)
+
+print(f'Ridge MSE: {mse_ridge}, R2: {r2_ridge}')
+print(f'Lasso MSE: {mse_lasso}, R2: {r2_lasso}')
+from sklearn.ensemble import RandomForestRegressor
+
+# Initialize the Random Forest model
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+
+# Train the model
+rf_model.fit(X_train, y_train)
+
+# Make predictions
+y_pred_rf = rf_model.predict(X_test)
+
+# Evaluate the model
+mse_rf = mean_squared_error(y_test, y_pred_rf)
+r2_rf = r2_score(y_test, y_pred_rf)
+
+print(f'Random Forest MSE: {mse_rf}, R2: {r2_rf}')
+# Visualize feature vs sales relationships
+sns.pairplot(data)
+plt.show()
+
+# Scatter plots for each feature against sales
+sns.scatterplot(x='TV', y='Sales', data=data)
+sns.scatterplot(x='Radio', y='Sales', data=data)
+sns.scatterplot(x='Newspaper', y='Sales', data=data)
+plt.show()
