@@ -1,0 +1,188 @@
+#LOADING AND EXPLORING THE DATASET
+
+import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load Iris dataset
+iris = load_iris()
+df = pd.DataFrame(iris.data, columns=iris.feature_names)
+df['species'] = iris.target
+
+# Mapping the target to species names
+species_mapping = {0: 'setosa', 1: 'versicolor', 2: 'virginica'}
+df['species'] = df['species'].map(species_mapping)
+
+# Features and target variable
+X = df.drop('species', axis=1)
+y = df['species']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+import pandas as pd
+from sklearn.datasets import load_iris
+
+# Load Iris dataset
+iris = load_iris()
+df = pd.DataFrame(iris.data, columns=iris.feature_names)
+df['species'] = iris.target
+
+# Mapping the target to species names
+species_mapping = {0: 'setosa', 1: 'versicolor', 2: 'virginica'}
+df['species'] = df['species'].map(species_mapping)
+
+# Display the first few rows of the dataset
+df.head()
+from sklearn.model_selection import train_test_split
+
+# Features and target variable
+X = df.drop('species', axis=1)
+y = df['species']
+
+# Split the data into training and testing sets (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+#train a model
+
+from sklearn.tree import DecisionTreeClassifier
+
+# Initialize the classifier
+clf = DecisionTreeClassifier(random_state=42)
+
+# Train the model
+clf.fit(X_train, y_train)
+#evaluate the model
+from sklearn.metrics import accuracy_score
+
+# Predict on the test set
+y_pred = clf.predict(X_test)
+
+# Evaluate accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Accuracy: {accuracy:.2f}')
+#example using random forest
+
+from sklearn.ensemble import RandomForestClassifier
+
+# Initialize and train the model
+rf = RandomForestClassifier(random_state=42)
+rf.fit(X_train, y_train)
+
+# Predict and evaluate
+y_pred_rf = rf.predict(X_test)
+accuracy_rf = accuracy_score(y_test, y_pred_rf)
+print(f'Random Forest Accuracy: {accuracy_rf:.2f}')
+#logistic regression
+
+from sklearn.linear_model import LogisticRegression
+
+# Initialize the Logistic Regression model
+lr = LogisticRegression(max_iter=200, random_state=42)
+
+# Train the model
+lr.fit(X_train, y_train)
+
+# Predict and evaluate
+y_pred_lr = lr.predict(X_test)
+accuracy_lr = accuracy_score(y_test, y_pred_lr)
+print(f'Logistic Regression Accuracy: {accuracy_lr:.2f}')
+# Initialize models
+models = {
+    'Logistic Regression': LogisticRegression(max_iter=200),
+    'K-Nearest Neighbors (KNN)': KNeighborsClassifier(),
+    'Support Vector Machines (SVM)': SVC(),
+    'Random Forest Classifier': RandomForestClassifier(random_state=42)
+}
+
+# Train models and evaluate performance
+results = {}
+
+for model_name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    results[model_name] = accuracy
+
+# Print the accuracy of each model
+for model_name, accuracy in results.items():
+    print(f'{model_name} Accuracy: {accuracy:.2f}')
+# Plotting the accuracy of all models
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x=list(results.keys()), y=list(results.values()), palette="viridis")
+plt.title("Model Comparison")
+plt.xlabel("Model")
+plt.ylabel("Accuracy")
+plt.show()
+import joblib
+
+# Save the best model (e.g., Random Forest)
+best_model = RandomForestClassifier(random_state=42)
+best_model.fit(X_train, y_train)
+joblib.dump(best_model, 'iris_best_model.pkl')
+import matplotlib.pyplot as plt
+import networkx as nx
+
+# Create a directed graph
+G = nx.DiGraph()
+
+# Add nodes (steps)
+steps = [
+    ('Load Iris Dataset', 'Preprocess Data'),
+    ('Preprocess Data', 'Initialize and Train Models'),
+    ('Initialize and Train Models', 'Evaluate Accuracy of Each Model'),
+    ('Evaluate Accuracy of Each Model', 'Compare Model Performances'),
+    ('Compare Model Performances', 'Save Best Model (Optional)'),
+]
+
+# Add edges based on the steps
+G.add_edges_from(steps)
+
+# Define the plot size
+plt.figure(figsize=(10, 6))
+
+# Draw the flowchart using NetworkX
+pos = nx.spring_layout(G, seed=42)  # Layout for positioning nodes
+nx.draw(G, pos, with_labels=True, node_size=3000, node_color='skyblue', font_size=10, font_weight='bold', arrows=True)
+
+# Display the flowchart
+plt.title('Iris Flower Classification Pipeline')
+plt.show()
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+import pandas as pd
+
+# Load Iris dataset
+iris = load_iris()
+df = pd.DataFrame(iris.data, columns=iris.feature_names)
+df['species'] = iris.target
+
+# Mapping the target to species names
+species_mapping = {0: 'setosa', 1: 'versicolor', 2: 'virginica'}
+df['species'] = df['species'].map(species_mapping)
+
+# Plot the sepal length vs sepal width and petal length vs petal width
+plt.figure(figsize=(12, 6))
+
+# Plot 1: Sepal Length vs Sepal Width
+plt.subplot(1, 2, 1)
+sns.scatterplot(x='sepal length (cm)', y='sepal width (cm)', hue='species', data=df, palette='viridis')
+plt.title('Sepal Length vs Sepal Width')
+
+# Plot 2: Petal Length vs Petal Width
+plt.subplot(1, 2, 2)
+sns.scatterplot(x='petal length (cm)', y='petal width (cm)', hue='species', data=df, palette='viridis')
+plt.title('Petal Length vs Petal Width')
+
+# Show the plots
+plt.tight_layout()
+plt.show()
