@@ -1,0 +1,124 @@
+#load the required librries
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.utils import resample
+from sklearn.tree import plot_tree
+
+#process the data
+
+# Load the dataset (ensure your CSV file is available)
+df = pd.read_csv('creditcard.csv')
+
+# Check for missing values in the dataset
+print("Missing values in each column:")
+print(df.isnull().sum())
+
+# Normalize the 'Amount' and 'Time' columns
+scaler = StandardScaler()
+df['Amount'] = scaler.fit_transform(df['Amount'].values.reshape(-1, 1))
+df['Time'] = scaler.fit_transform(df['Time'].values.reshape(-1, 1))
+
+# Split the data into features (X) and target (y)
+X = df.drop(['Class'], axis=1)  # Features (excluding 'class' column)
+y = df['Class']  # Target variable (fraudulent or not)
+
+#handle class imbalance
+
+# Visualize the class distribution (Fraudulent vs Genuine)
+sns.countplot(x='Class', data=df)
+plt.title('Class Distribution (Fraud vs Non-Fraud)')
+plt.show()
+
+# Handle class imbalance using oversampling (Resampling the minority class)
+df_majority = df[df['Class'] == 0]  # Genuine transactions
+df_minority = df[df['Class'] == 1]  # Fraudulent transactions
+
+# Upsample the minority class (fraudulent transactions)
+df_minority_upsampled = resample(df_minority,
+                                 replace=True,     # Sample with replacement
+                                 n_samples=len(df_majority),  # Match number of majority class
+                                 random_state=42)  # For reproducibility
+
+# Combine the upsampled minority class with the majority class
+df_upsampled = pd.concat([df_majority, df_minority_upsampled])
+
+# Visualize the class distribution after oversampling
+sns.countplot(x='Class', data=df_upsampled)
+plt.title('Class Distribution After Upsampling')
+plt.show()
+
+# Separate features and target after balancing
+X_upsampled = df_upsampled.drop(['Class'], axis=1)
+y_upsampled = df_upsampled['Class']
+
+
+# Split Data into Training and Testing Sets
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_upsampled, y_upsampled, test_size=0.3, random_state=42)
+
+# Display the shape of the datasets
+print(f"Training Data Shape: {X_train.shape}")
+print(f"Test Data Shape: {X_test.shape}")
+
+#Train the Classification Model
+
+# Train a Random Forest Classifier
+clf = RandomForestClassifier(n_estimators=100, random_state=42)
+clf.fit(X_train, y_train)
+
+# Predict on the test set
+y_pred = clf.predict(X_test)
+
+# Output classification report
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+# Confusion Matrix
+cm = confusion_matrix(y_test, y_pred)
+
+# Visualize the confusion matrix
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Genuine', 'Fraudulent'], yticklabels=['Genuine', 'Fraudulent'])
+plt.title('Confusion Matrix')
+plt.show()
+
+#Visualize a Decision Tree from the Random Forest
+
+# Visualize one decision tree from the Random Forest model
+plt.figure(figsize=(20,10))
+plot_tree(clf.estimators_[0], feature_names=X.columns, class_names=['Genuine', 'Fraudulent'], filled=True)
+plt.title("Sample Decision Tree from Random Forest")
+plt.show()
+
+#Flowchart of the Process
+
+def draw_flowchart():
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    ax.text(0.5, 0.9, 'Start', ha='center', va='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black', boxstyle='round,pad=1'))
+    ax.text(0.5, 0.75, 'Load Data', ha='center', va='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black', boxstyle='round,pad=1'))
+    ax.text(0.5, 0.6, 'Preprocess Data (Normalize, Missing Values)', ha='center', va='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black', boxstyle='round,pad=1'))
+    ax.text(0.5, 0.45, 'Handle Class Imbalance (Oversample/Undersample)', ha='center', va='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black', boxstyle='round,pad=1'))
+    ax.text(0.5, 0.3, 'Split Data (Train/Test)', ha='center', va='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black', boxstyle='round,pad=1'))
+    ax.text(0.5, 0.15, 'Train Model (Random Forest)', ha='center', va='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black', boxstyle='round,pad=1'))
+    ax.text(0.5, 0.0, 'Evaluate Model (Confusion Matrix, Metrics)', ha='center', va='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black', boxstyle='round,pad=1'))
+
+    # Draw arrows between steps
+    ax.annotate('', xy=(0.5, 0.85), xytext=(0.5, 0.8), arrowprops=dict(arrowstyle='->', lw=1.5))
+    ax.annotate('', xy=(0.5, 0.7), xytext=(0.5, 0.65), arrowprops=dict(arrowstyle='->', lw=1.5))
+    ax.annotate('', xy=(0.5, 0.55), xytext=(0.5, 0.5), arrowprops=dict(arrowstyle='->', lw=1.5))
+    ax.annotate('', xy=(0.5, 0.4), xytext=(0.5, 0.35), arrowprops=dict(arrowstyle='->', lw=1.5))
+    ax.annotate('', xy=(0.5, 0.25), xytext=(0.5, 0.2), arrowprops=dict(arrowstyle='->', lw=1.5))
+
+    ax.set_axis_off()
+    plt.title("Credit Card Fraud Detection Pipeline", fontsize=14)
+    plt.show()
+
+draw_flowchart()
